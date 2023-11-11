@@ -9,4 +9,4 @@ from app import app
 @app.route('/index')
 def index():
     ''' returns Hello, World! '''
-    return "Hello, Worlk!"
+    return "Hello, World!"
