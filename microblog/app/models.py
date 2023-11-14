@@ -4,9 +4,19 @@ Module - models: this module defines the structure of the database
 
 from datetime import datetime
 from app import db
+from app import login
+from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
 
-class User(db.Model):
+
+@login.user_loader
+def load_user(id):
+    ''' function that is called to load a user. args=id '''
+    return User.query.get(int(id))
+
+
+class User(UserMixin, db.Model):
     '''
     User model that takes:
     id, username, email and password_hash
@@ -22,6 +32,15 @@ class User(db.Model):
         returns '<User {}>'.format(self.username)
         '''
         return '<User {}>'.format(self.username)
+
+    def set_password(self, password):
+        ''' function that sets password args=password '''
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        ''' function that checks password args=password '''
+        return check_password_hash(self.password_hash, password)
+
 
 
 class Post(db.Model):
