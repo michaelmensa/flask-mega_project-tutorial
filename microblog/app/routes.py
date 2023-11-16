@@ -57,6 +57,7 @@ def logout():
     logout_user()
     return redirect(url_for('index'))
 
+''' registration route '''
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     '''function that registers a new user '''
@@ -71,3 +72,15 @@ def register():
         flash('Congratulations, you are now a registered user!')
         return redirect(url_for('login'))
     return render_template('register.html', title='Register', form=form)
+
+''' profile page and avatar '''
+@app.route('/user/<username>')
+@login_required
+def user(username):
+    ''' routes to the profile page of the user. args=username '''
+    user = User.query.filter_by(username=username).first_or_404()
+    posts = [
+            {'author': user, 'body': 'Test post #1'},
+            {'author': user, 'body': 'Test post #2'}
+            ]
+    return render_template('user.html', user=user, posts=posts)
