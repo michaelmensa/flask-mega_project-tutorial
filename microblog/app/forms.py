@@ -6,7 +6,9 @@ also contains registration forms
 
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
+from wtforms import TextAreaField
 from wtforms.validators import DataRequired, Email, EqualTo, ValidationError
+from wtforms.validators import Length
 from app.models import User
 
 
@@ -40,3 +42,10 @@ class RegistrationForm(FlaskForm):
         user = User.query.filter_by(email=email.data).first()
         if user is not None:
             raise ValidationError('Please use a different email address.')
+
+
+class EditProfileForm(FlaskForm):
+    ''' class that allows users to edit their profile '''
+    username = StringField('Username', validators=[DataRequired()])
+    about_me = TextAreaField('About me', validators=[Length(min=0, max=140)])
+    submit = SubmitField('Submit')
