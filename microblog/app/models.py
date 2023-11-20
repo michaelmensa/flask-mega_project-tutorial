@@ -15,6 +15,11 @@ def load_user(id):
     ''' function that is called to load a user. args=id '''
     return User.query.get(int(id))
 
+followers = db.Table('followers',
+    db.Column('follower_id', db.Integer, db.ForeignKey('user.id')),
+    db.Column('followed_id', db.Integer, db.ForeignKey('user.id'))
+    )
+
 
 class User(UserMixin, db.Model):
     '''
@@ -28,6 +33,14 @@ class User(UserMixin, db.Model):
     posts = db.relationship('Post', backref='author', lazy='dynamic')
     about_me = db.Column(db.String(140))
     last_seen = db.Column(db.DateTime, default=datetime.utcnow)
+    '''
+    Association table for followers and following
+    '''
+    followed = db.relationship(
+        'User', secondary=followers,
+        primaryjoin=(followers.c.follower_id == id),
+        secondaryjoin=(followers.c.followed_id == id),
+        backref=db.backref('followers', lazy='dynamic'), lazy='dynamic')
 
     def __repr__(self):
         '''
@@ -49,6 +62,27 @@ class User(UserMixin, db.Model):
         return 'https://www.gravatar.com/avatar/{}?d=identicons&s={}'.format(
             digest, size)
 
+    def follow(self, user):
+        ''' function to follow a user '''
+        if not self.is_following(user):
+            self.followed.append(user)
+
+    def unfollow(self, user):
+        ''' function to unfollow a user '''
+        if self.is_following(user):
+            self.followed.remove(user)
+
+    def is_following(self, user):
+        ''' function to check following '''
+        return self.followed.filter(
+            followers.c.followed_id == user.id).count() > 0
+
+    def followed_posts(self):
+        ''' to view posts by followed by users '''
+        return Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id).filter(
+                followers.c.follower_id == self.id).order_by(
+                    Post.timestamp.desc()))
 
 
 class Post(db.Model):
