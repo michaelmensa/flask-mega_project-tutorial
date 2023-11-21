@@ -79,10 +79,17 @@ class User(UserMixin, db.Model):
 
     def followed_posts(self):
         ''' to view posts by followed by users '''
-        return Post.query.join(
+        '''return Post.query.join(
             followers, (followers.c.followed_id == Post.user_id).filter(
                 followers.c.follower_id == self.id).order_by(
                     Post.timestamp.desc()))
+        '''
+        ''' followed post query with user's own posts '''
+        followed = Post.query.join(
+            followers, (followers.c.followed_id == Post.user_id)).filter(
+                followers.c.follower_id == self.id)
+        own = Post.query.filter_by(user_id=self.id)
+        return followed.union(own).order_by(Post.timestamp.desc())
 
 
 class Post(db.Model):
