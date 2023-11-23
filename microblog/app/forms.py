@@ -79,3 +79,11 @@ class ResetPasswordFrom(FlaskForm):
     password2 = PasswordField(
         'Repeat Password', validators=[DataRequired(), EqualTo('password')])
     submit = SubmitField('Request Password Reset')
+
+
+class PostForm(FlaskForm):
+    ''' Blog submission form. Users can type new posts '''
+    post = TextAreaField('Say something', validators=[
+        DataRequired(), Length(min=1, max=140)])
+    submit = SubmitField('Submit')
+
