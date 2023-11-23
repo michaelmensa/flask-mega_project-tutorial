@@ -65,3 +65,17 @@ class EditProfileForm(FlaskForm):
 class EmptyForm(FlaskForm):
     ''' empty form for following and unfollowing '''
     submit = SubmitField('Submit')
+
+
+class ResetPasswordRequestForm(FlaskForm):
+    ''' Reset password request form '''
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    submit = SubmitField('Request Password Reset')
+
+
+class ResetPasswordFrom(FlaskForm):
+    ''' password request form '''
+    password = PasswordField('Password', validators=[DataRequired()])
+    password2 = PasswordField(
+        'Repeat Password', validators=[DataRequired(), EqualTo('password')])
+    submit = SubmitField('Request Password Reset')
