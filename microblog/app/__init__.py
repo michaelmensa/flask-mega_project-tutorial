@@ -5,12 +5,14 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_bootstrap import Bootstrap
 from flask_mail import Mail
+from flask_moment import Moment
 import logging
 from logging.handlers import SMTPHandler, RotatingFileHandler
 
 
 app = Flask(__name__)
 mail = Mail(app)
+moment = Moment(app)
 app.config.from_object(Config)
 bootstrap = Bootstrap(app)
 db = SQLAlchemy(app)
